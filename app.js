@@ -20,6 +20,21 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
+//mostly copy pasted from stack overflow
+//this will find and delete a previous output file so as to not append HTML to an existing output
+fs.stat(outputPath, function (err, fileDetails) {
+    // console.log(fileDetails);
+     if (err) {
+        // return console.error(err);
+    } 
+    fs.unlink(outputPath,function(err){
+        //  if(err) return console.log(err);
+        //  console.log('file deleted successfully');
+    });  
+ });
+
+
+
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
 
@@ -44,12 +59,6 @@ const render = require("./lib/htmlRenderer");
 // for the provided `render` function to work! ```
 
 employees = [];
-testObject= {
-    name : "bob",
-    lname : "smoth",
-    truthy : true,
-
-}
 // function prompts(){
 
 
@@ -103,7 +112,7 @@ inquirer
                     // EmployeeList = EmployeeList.push.apply(new Engineer(EmpRes.name, EmpRes.id, EmpRes.email, EngRes.github));
                     employees.push(new Engineer(EmpRes.name, EmpRes.id, EmpRes.email, EngRes.github));
                     employees.push(new Engineer(EmpRes.name, EmpRes.id, EmpRes.email, EngRes.github));
-                    console.log("employee list is " + employees[0] + employees[1]);
+                    // console.log("employee list is " + employees[0] + employees[1]);
                     
                     const htmlString = render(employees);
                     fs.appendFile(outputPath, htmlString, function (err) {
