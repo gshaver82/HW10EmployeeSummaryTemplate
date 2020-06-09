@@ -24,14 +24,14 @@ const render = require("./lib/htmlRenderer");
 //this will find and delete a previous output file so as to not append HTML to an existing output
 fs.stat(outputPath, function (err, fileDetails) {
     // console.log(fileDetails);
-     if (err) {
+    if (err) {
         // return console.error(err);
-    } 
-    fs.unlink(outputPath,function(err){
+    }
+    fs.unlink(outputPath, function (err) {
         //  if(err) return console.log(err);
         //  console.log('file deleted successfully');
-    });  
- });
+    });
+});
 
 
 
@@ -59,80 +59,178 @@ fs.stat(outputPath, function (err, fileDetails) {
 // for the provided `render` function to work! ```
 
 employees = [];
-// function prompts(){
 
 
-inquirer
-    .prompt([
+
+function addMoreEmployee(response) {
+    inquirer.prompt([
         {
-            type: "input",
-            message: "name",
-            name: "name",
-            default:"bob"
-        },
-        {
-            type: "input",
-            message: "ID",
-            name: "id",
-            default:"2"
-        },
-        {
-            type: "input",
-            message: "email",
-            name: "email",
-            default:"bobs email"
-        },
-        {
-            type: "list",
-            message: "What type of Employee?",
-            name: "role",
-            choices: [
-                "Manager",
-                "Intern",
-                "Engineer"
-            ],
-        },
-
-
-    ]).then(function (EmpRes) {
-        if (EmpRes.role == "Engineer") {
-            inquirer
-                .prompt([
-                    {
-                        type: "input",
-                        message: "Github username?",
-                        name: "github",
-                        default:"bobsGithub"
-                    },
-
-                ]).then(function (EngRes) {
-                    
-
-                    // console.log("new enge class" + new Engineer(EmpRes.name, EmpRes.id, EmpRes.email, EngRes.github));
-                    // EmployeeList = EmployeeList.push.apply(new Engineer(EmpRes.name, EmpRes.id, EmpRes.email, EngRes.github));
-                    employees.push(new Engineer(EmpRes.name, EmpRes.id, EmpRes.email, EngRes.github));
-                    employees.push(new Engineer(EmpRes.name, EmpRes.id, EmpRes.email, EngRes.github));
-                    // console.log("employee list is " + employees[0] + employees[1]);
-                    
-                    const htmlString = render(employees);
-                    fs.appendFile(outputPath, htmlString, function (err) {
-                        if (err) throw err;
-                        console.log('Saved!');
-                      }); 
-
-                }).catch(function (error) {
-                    console.log("An error occured:", error);
-                });
+            type: "confirm",
+            message: "Would you like to add more team members?",
+            name: "addMore"
         }
+    ]).then(function (response) {
+        if (response.addMore === true) {
+            EmployeePrompts();
+        } else {
+            const htmlString = render(employees);
+            fs.writeFile(outputPath, htmlString, function (err) {
+                if (err) throw err;
+                console.log('Saved!');
+            });
+        };
+    })
+};
+
+EmployeePrompts();
 
 
-    }).catch(function (error) {
-        console.log("An error occured:", error);
-    });
+
+
+
+function EmployeePrompts() {
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                message: "name",
+                name: "name",
+                default: "bob"
+            },
+            {
+                type: "input",
+                message: "ID",
+                name: "id",
+                default: "2"
+            },
+            {
+                type: "input",
+                message: "email",
+                name: "email",
+                default: "bobs email"
+            },
+            {
+                type: "list",
+                message: "What is the employee's role?",
+                name: "role",
+                choices: [
+                    "Manager",
+                    "Engineer",
+                    "Intern"
+                ],
+            }
+        ]).then(function (EmpRes) {
+            if (EmpRes.role == "Manager") {
+                ManagerPrompt(EmpRes);
+            } else if (EmpRes.role == "Engineer") {
+                EngineerPrompt(EmpRes);
+            } else if (EmpRes.role == "Intern") {
+                InternPrompt(EmpRes);
+            };
+        }).catch(function (error) {
+            console.log("An error occured:", error);
+        });
+};
+
+//         ]).then(function (EmpRes) {
+//             if (EmpRes.role == "Engineer") {
+//                 inquirer
+//                     .prompt([
+//                         {
+//                             type: "input",
+//                             message: "Github username?",
+//                             name: "github",
+//                             default: "bobsGithub"
+//                         },
+//                     ]).then(function (EngRes) {
+//                         employees.push(new Engineer(EmpRes.name, EmpRes.id, EmpRes.email, EngRes.github));
+//                         // const htmlString = render(employees);
+//                         // fs.appendFile(outputPath, htmlString, function (err) {
+//                         //     if (err) throw err;
+//                         //     console.log('Saved!');
+//                         // });
+
+//                     }).catch(function (error) {
+//                         console.log("An error occured:", error);
+//                     });
+//             }
+//         }).catch(function (error) {
+//             console.log("An error occured:", error);
+//         });
 // }
-// prompts();
-    // Manager prompt
 
-    
+
+
+function ManagerPrompt(EmpRes) {
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                message: "Managers Office number?",
+                name: "getOfficeNumber",
+                default: "99"
+            },
+        ]).then(function (managerRes) {
+            employees.push(new Manager(EmpRes.name, EmpRes.id, EmpRes.email, managerRes.getOfficeNumber));
+            // const htmlString = render(employees);
+            // fs.appendFile(outputPath, htmlString, function (err) {
+            //     if (err) throw err;
+            //     console.log('Saved!');
+            addMoreEmployee();
+            // });
+
+        }).catch(function (error) {
+            console.log("An error occured:", error);
+        });
+}
+
+function EngineerPrompt(EmpRes) {
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                message: "Github username?",
+                name: "github",
+                default: "bobsGithub"
+            },
+        ]).then(function (engerRes) {
+            employees.push(new Engineer(EmpRes.name, EmpRes.id, EmpRes.email, engerRes.github));
+            // const htmlString = render(employees);
+            // fs.appendFile(outputPath, htmlString, function (err) {
+            //     if (err) throw err;
+            //     console.log('Saved!');
+            addMoreEmployee();
+            // });
+
+        }).catch(function (error) {
+            console.log("An error occured:", error);
+        });
+}
+
+function InternPrompt(EmpRes) {
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                message: "interns school?",
+                name: "school",
+                default: "99"
+            },
+        ]).then(function (InternRes) {
+            employees.push(new Intern(EmpRes.name, EmpRes.id, EmpRes.email, InternRes.school));
+            // const htmlString = render(employees);
+            // fs.appendFile(outputPath, htmlString, function (err) {
+            //     if (err) throw err;
+            //     console.log('Saved!');
+            addMoreEmployee();
+            // });
+
+        }).catch(function (error) {
+            console.log("An error occured:", error);
+        });
+}
+
+
+
 
 
