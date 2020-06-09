@@ -86,9 +86,6 @@ inquirer
 
 
     ]).then(function (EmpRes) {
-        // let stream = fs.createWriteStream("README.md");
-        // stream.write("# " + data.title + "\n");
-        // stream.write("# Description" + "\n" + data.Description + "\n");
         if (EmpRes.role == "Engineer") {
             inquirer
                 .prompt([
@@ -105,15 +102,10 @@ inquirer
                     // console.log("new enge class" + new Engineer(EmpRes.name, EmpRes.id, EmpRes.email, EngRes.github));
                     // EmployeeList = EmployeeList.push.apply(new Engineer(EmpRes.name, EmpRes.id, EmpRes.email, EngRes.github));
                     employees.push(new Engineer(EmpRes.name, EmpRes.id, EmpRes.email, EngRes.github));
-                    // EmployeeList.push(testObject);
-                    // console.log("employee list is " + EmployeeList[0] + EmployeeList[1]);
+                    employees.push(new Engineer(EmpRes.name, EmpRes.id, EmpRes.email, EngRes.github));
+                    console.log("employee list is " + employees[0] + employees[1]);
                     
-                    // let stream = fs.createWriteStream("README.md");
-                    // stream.write("# " + data.title + "\n");
-                    // stream.write("# Description" + "\n" + data.Description + "\n");
                     const htmlString = render(employees);
-                    // fs.writefile(outputPath, htmlString);
-
                     fs.appendFile(outputPath, htmlString, function (err) {
                         if (err) throw err;
                         console.log('Saved!');
